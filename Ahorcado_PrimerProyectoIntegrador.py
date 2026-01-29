@@ -27,27 +27,27 @@ def palabra_con_guiones(palabra):
         lista.append('_')
     return lista
 
-def letra_en_palabra (letra,palabra,*args):
+def descubrir_letra (contador,letra,palabra,*args):
     """
-    Verifica si la letra ingresada se encuentra en la palabra a descubrir y,
-    en caso afirmativo, reemplaza los guiones bajos ('_') por la letra
-    correspondiente en las posiciones correctas.
+    Verifica si la letra ingresada se encuentra en la palabra a adivinar y,
+    por cada coincidencia, reemplaza el guion bajo ('_') por la letra
+    correspondiente en la posición correcta.
 
-    Devuelve una nueva lista que representa el estado actual de la palabra,
-    compuesta por letras adivinadas y guiones bajos.
+    Además, incrementa un contador que indica cuántas veces aparece la letra
+    descubierta en la palabra.
 
+    :param contador: Cantidad de veces que la letra ya fue encontrada.
     :param letra: Letra ingresada por el usuario.
     :param palabra: Palabra a adivinar.
-    :param args: Estado actual de la palabra (letras y guiones bajos).
-    :return: Lista actualizada con las letras descubiertas.
+    :param args: Estado actual de la palabra (letras descubiertas y guiones bajos).
+    :return: Tupla con la lista actualizada de la palabra y el contador de apariciones.
     """
     lista=list(args)
     for indice in range(len(lista)):
         if lista[indice]=='_' and palabra[indice]==letra:
             lista[indice]=letra.upper()
-        elif lista[indice]=='_' and palabra[indice]!=letra:
-            vidas-=1    
-    return lista
+            contador+=1
+    return lista,contador
 
 def hay_guiones(*args):
     """
@@ -67,27 +67,31 @@ def hay_guiones(*args):
             encontrado=True
     return encontrado
 
-def perder_vidas (letra,palabra,*args):
+def actualizar_vidas (contador,vidas,vidas_perdidas):
     """
-    Verifica si la letra ingresada se encuentra en la palabra a descubrir y,
-    en caso afirmativo, reemplaza los guiones bajos ('_') por la letra
-    correspondiente en las posiciones correctas.
+    Actualiza la cantidad de vidas restantes del jugador según el resultado
+    del intento actual y muestra el estado visual de las vidas.
 
-    Devuelve una nueva lista que representa el estado actual de la palabra,
-    compuesta por letras adivinadas y guiones bajos.
+    Si la letra ingresada no fue encontrada (contador == 0), se descuenta una vida.
+    En caso contrario, las vidas se mantienen sin cambios.
 
-    :param letra: Letra ingresada por el usuario.
-    :param palabra: Palabra a adivinar.
-    :param args: Estado actual de la palabra (letras y guiones bajos).
-    :return: Lista actualizada con las letras descubiertas.
+    :param contador: Cantidad de veces que la letra ingresada aparece en la palabra.
+    :param vidas: Cantidad de vidas actuales del jugador.
+    :param vidas_perdidas: Cantidad de vidas ya perdidas.
+    :return: Tupla con la cantidad actualizada de vidas y vidas perdidas.
     """
-    lista=list(args)
-    pierde_vida=False
-    for indice in range(len(lista)):
-        if lista[indice]=='_' and palabra[indice]!=letra:
-               pierde_vida=True
-    return pierde_vida
+    if contador==0:
+        vidas-=1
+        vidas_perdidas=7-vidas 
+        print(f'Vidas: {vidas_perdidas*"❌"}{vidas*"💗"}')
+    elif contador_adivinar>0 and vidas<7:
+        print(f'Vidas: {vidas_perdidas*"❌"}{vidas*"💗"}')
+    else:
+        print(f'Vidas: {vidas*"💗"}')
+    return vidas,vidas_perdidas
 
+vidas=7
+vidas_perdidas=0
 while True:
     try:
         jugar=input('¿Jugamos? (S/N) ').strip().lower()
@@ -100,44 +104,54 @@ while True:
                         match nivel:
                             case 1:
                                 palabra=random.choice(niveles.get('facil'))
-                                vidas=7
-                                print(f'{vidas*"💗"}')
                                 completa=palabra_con_guiones(palabra)
                                 print(' '.join(completa))
+                                print(f'Vidas: {vidas*"💗"}')
                                 while vidas!=0:
                                     letra_ingresada=input('Ingrese una letra: ').strip().lower()
+                                    contador_adivinar=0
                                     if letra_ingresada.isalpha():
-                                        completa=letra_en_palabra(letra_ingresada,palabra,*completa)
+                                        completa,contador_adivinar=descubrir_letra(contador_adivinar,letra_ingresada,palabra,*completa)
                                     print(' '.join(completa))
-                                    if perder_vidas(letra_ingresada,palabra,*completa):
-                                        vidas-=1
-                                    vidas_perdidas=7-vidas
-                                    print(f'{vidas_perdidas*"❌"}{vidas*"💗"}')
+                                    vidas,vidas_perdidas=actualizar_vidas(contador_adivinar,vidas,vidas_perdidas)
                                     if vidas==0:
                                         print('💀 Perdiste! Te quedaste sin vidas')
                                     if len(completa)==len(palabra) and hay_guiones(*completa)==False:
+                                        print('GANASTE! 🎉🎉🎉')
                                         break
                             case 2:
                                 palabra=random.choice(niveles.get('intermedio'))
                                 completa=palabra_con_guiones(palabra)
                                 print(' '.join(completa))
-                                while True:
+                                print(f'Vidas: {vidas*"💗"}')
+                                while vidas!=0:
                                     letra_ingresada=input('Ingrese una letra: ').strip().lower()
+                                    contador_adivinar=0
                                     if letra_ingresada.isalpha():
-                                        completa=letra_en_palabra(letra_ingresada,palabra,*completa)
+                                        completa,contador_adivinar=descubrir_letra(contador_adivinar,letra_ingresada,palabra,*completa)
                                     print(' '.join(completa))
+                                    vidas,vidas_perdidas=actualizar_vidas(contador_adivinar,vidas,vidas_perdidas)
+                                    if vidas==0:
+                                        print('💀 Perdiste! Te quedaste sin vidas')
                                     if len(completa)==len(palabra) and hay_guiones(*completa)==False:
+                                        print('GANASTE! 🎉🎉🎉')
                                         break
                             case 3:
                                 palabra=random.choice(niveles.get('dificil'))
                                 completa=palabra_con_guiones(palabra)
                                 print(' '.join(completa))
-                                while True:
+                                print(f'Vidas: {vidas*"💗"}')
+                                while vidas!=0:
                                     letra_ingresada=input('Ingrese una letra: ').strip().lower()
+                                    contador_adivinar=0
                                     if letra_ingresada.isalpha():
-                                        completa=letra_en_palabra(letra_ingresada,palabra,*completa)
+                                        completa,contador_adivinar=descubrir_letra(contador_adivinar,letra_ingresada,palabra,*completa)
                                     print(' '.join(completa))
+                                    vidas,vidas_perdidas=actualizar_vidas(contador_adivinar,vidas,vidas_perdidas)
+                                    if vidas==0:
+                                        print('💀 Perdiste! Te quedaste sin vidas')
                                     if len(completa)==len(palabra) and hay_guiones(*completa)==False:
+                                        print('GANASTE! 🎉🎉🎉')
                                         break
                             case _:
                                 raise ValueError ('Entrada Inválida. Elija los niveles entre 1 y 3.')
