@@ -84,84 +84,94 @@ def actualizar_vidas (contador,vidas,vidas_perdidas):
         vidas-=1
         vidas_perdidas=7-vidas 
         print(f'Vidas: {vidas_perdidas*"❌"}{vidas*"💗"}')
-    elif contador_adivinar>0 and vidas<7:
-        print(f'Vidas: {vidas_perdidas*"❌"}{vidas*"💗"}')
     else:
-        print(f'Vidas: {vidas*"💗"}')
+        print(f'Vidas: {vidas_perdidas*"❌"}{vidas*"💗"}')
     return vidas,vidas_perdidas
 
-vidas=7
-vidas_perdidas=0
+
 while True:
-    try:
-        jugar=input('¿Jugamos? (S/N) ').strip().lower()
-        match jugar:
-            case 's':
-                while True:    
-                    try:
-                        print('Niveles:\n1. Fácil\n2. Intermedio\n3. Difícil')
-                        nivel=int(input('Elija el nivel (1-3): ').strip())
-                        match nivel:
-                            case 1:
-                                palabra=random.choice(niveles.get('facil'))
-                                completa=palabra_con_guiones(palabra)
-                                print(' '.join(completa))
-                                print(f'Vidas: {vidas*"💗"}')
-                                while vidas!=0:
-                                    letra_ingresada=input('Ingrese una letra: ').strip().lower()
-                                    contador_adivinar=0
-                                    if letra_ingresada.isalpha():
-                                        completa,contador_adivinar=descubrir_letra(contador_adivinar,letra_ingresada,palabra,*completa)
+    jugar=input('¿Jugamos? (S/N) ').strip().lower()
+    match jugar:
+        case 's':
+            while True:    
+                print('Niveles:\n1. Fácil\n2. Intermedio\n3. Difícil')
+                try:
+                    nivel=int(input('Elija el nivel (1-3): ').strip())
+                except ValueError:
+                    print(f'Error: Entrada inválida. Ingrese un número entero entre 1 y 3 Intente nuevamente.')
+                else:
+                    match nivel:
+                        case 1:
+                            palabra=random.choice(niveles.get('facil'))
+                            completa=palabra_con_guiones(palabra)
+                            print(' '.join(completa))
+                            vidas=7
+                            vidas_perdidas=0
+                            print(f'Vidas: {vidas*"💗"}')
+                            while vidas!=0:
+                                letra_ingresada=input('Ingrese una letra: ').strip().lower()
+                                contador_adivinar=0
+                                if not (len(letra_ingresada)==1 and letra_ingresada.isalpha()):                                        
+                                    print('Error: Entrada Inválida. Recuerde que de ingresar una sola letra.')
+                                else:
+                                    completa,contador_adivinar=descubrir_letra(contador_adivinar,letra_ingresada,palabra,*completa)
                                     print(' '.join(completa))
                                     vidas,vidas_perdidas=actualizar_vidas(contador_adivinar,vidas,vidas_perdidas)
                                     if vidas==0:
                                         print('💀 Perdiste! Te quedaste sin vidas')
+                                        print(f'La palabra era: {" ".join(palabra.upper())}')
                                     if len(completa)==len(palabra) and hay_guiones(*completa)==False:
                                         print('GANASTE! 🎉🎉🎉')
                                         break
-                            case 2:
-                                palabra=random.choice(niveles.get('intermedio'))
-                                completa=palabra_con_guiones(palabra)
-                                print(' '.join(completa))
-                                print(f'Vidas: {vidas*"💗"}')
-                                while vidas!=0:
-                                    letra_ingresada=input('Ingrese una letra: ').strip().lower()
-                                    contador_adivinar=0
-                                    if letra_ingresada.isalpha():
-                                        completa,contador_adivinar=descubrir_letra(contador_adivinar,letra_ingresada,palabra,*completa)
+                        case 2:
+                            palabra=random.choice(niveles.get('intermedio'))
+                            completa=palabra_con_guiones(palabra)
+                            print(' '.join(completa))
+                            vidas=7
+                            vidas_perdidas=0
+                            print(f'Vidas: {vidas*"💗"}')
+                            while vidas!=0:
+                                letra_ingresada=input('Ingrese una letra: ').strip().lower()
+                                contador_adivinar=0
+                                if not (len(letra_ingresada)==1 and letra_ingresada.isalpha()):                                        
+                                    print('Error: Entrada Inválida. Recuerde que de ingresar una sola letra.')
+                                else:
+                                    completa,contador_adivinar=descubrir_letra(contador_adivinar,letra_ingresada,palabra,*completa)
                                     print(' '.join(completa))
                                     vidas,vidas_perdidas=actualizar_vidas(contador_adivinar,vidas,vidas_perdidas)
                                     if vidas==0:
                                         print('💀 Perdiste! Te quedaste sin vidas')
+                                        print(f'La palabra era: {" ".join(palabra.upper())}')
                                     if len(completa)==len(palabra) and hay_guiones(*completa)==False:
                                         print('GANASTE! 🎉🎉🎉')
                                         break
-                            case 3:
-                                palabra=random.choice(niveles.get('dificil'))
-                                completa=palabra_con_guiones(palabra)
-                                print(' '.join(completa))
-                                print(f'Vidas: {vidas*"💗"}')
-                                while vidas!=0:
-                                    letra_ingresada=input('Ingrese una letra: ').strip().lower()
-                                    contador_adivinar=0
-                                    if letra_ingresada.isalpha():
-                                        completa,contador_adivinar=descubrir_letra(contador_adivinar,letra_ingresada,palabra,*completa)
+                        case 3:
+                            palabra=random.choice(niveles.get('dificil'))
+                            completa=palabra_con_guiones(palabra)
+                            print(' '.join(completa))
+                            vidas=7
+                            vidas_perdidas=0
+                            print(f'Vidas: {vidas*"💗"}')
+                            while vidas!=0:
+                                letra_ingresada=input('Ingrese una letra: ').strip().lower()
+                                contador_adivinar=0
+                                if not (len(letra_ingresada)==1 and letra_ingresada.isalpha()):                                        
+                                    print('Error: Entrada Inválida. Recuerde que de ingresar una sola letra.')
+                                else:
+                                    completa,contador_adivinar=descubrir_letra(contador_adivinar,letra_ingresada,palabra,*completa)
                                     print(' '.join(completa))
                                     vidas,vidas_perdidas=actualizar_vidas(contador_adivinar,vidas,vidas_perdidas)
                                     if vidas==0:
                                         print('💀 Perdiste! Te quedaste sin vidas')
+                                        print(f'La palabra era: {" ".join(palabra.upper())}')
                                     if len(completa)==len(palabra) and hay_guiones(*completa)==False:
                                         print('GANASTE! 🎉🎉🎉')
                                         break
-                            case _:
-                                raise ValueError ('Entrada Inválida. Elija los niveles entre 1 y 3.')
-                        break
-                    except ValueError as e:
-                        print(f"Error: {str(e)}. Intente nuevamente.")
-                
-            case 'n':
-                break
-            case _:
-                raise ValueError ('Entrada Inválida.')
-    except ValueError as e:
-        print(f"Error: {str(e)}. Intente nuevamente.")
+                        case _:
+                            print('Error: Entrada Inválida. Elija los niveles entre 1 y 3.')
+                            continue
+                    break 
+        case 'n':
+            break
+        case _:
+            print('Error: Entrada Inválida. Intente nuevamente.')
