@@ -1,7 +1,7 @@
 import os
 os.system('cls')
 import random
-
+ 
 
 niveles={
 'facil':['gato','casa','sol','mesa','perro','luna','flor','pan','mano','agua'],
@@ -88,6 +88,65 @@ def actualizar_vidas (contador,vidas,vidas_perdidas):
         print(f'Vidas: {vidas_perdidas*"❌"}{vidas*"💗"}')
     return vidas,vidas_perdidas
 
+def pedir_letra():
+    """
+    Solicita al usuario una letra para intentar descubrir la palabra.
+
+    La función valida que la entrada sea un único carácter alfabético.
+    Si la entrada no es válida, muestra un mensaje de error y vuelve
+    a solicitar la letra hasta que el ingreso sea correcto.
+
+    :return: Letra válida ingresada por el usuario, en minúscula.
+    """
+    while True:
+        letra=input('Ingrese una letra: ').strip().lower()
+        if len(letra)==1 and letra.isalpha():
+            return letra
+        else:
+          print('Error: Entrada Inválida. Recuerde que de ingresar una sola letra.')
+
+def mostrar_resultado(vidas,palabra):
+    """
+    Muestra el resultado final de la partida.
+
+    Si el jugador se queda sin vidas, informa que ha perdido y revela
+    la palabra a adivinar. En caso contrario, indica que el jugador
+    ha ganado la partida.
+
+    :param vidas: Cantidad de vidas restantes al finalizar la partida.
+    :param palabra: Palabra que debía ser adivinada.
+    """
+    if vidas==0:
+        print('💀 Perdiste! Te quedaste sin vidas')
+        print(f'La palabra era: {" ".join(palabra.upper())}')
+    else:
+        print('GANASTE! 🎉🎉🎉')
+
+def jugar_partida(palabra):
+    """
+    Ejecuta una partida completa del juego del ahorcado.
+
+    Inicializa el estado de la palabra, las vidas del jugador y gestiona
+    el ciclo principal del juego, solicitando letras, actualizando el
+    estado de la palabra y las vidas, y verificando las condiciones de
+    victoria o derrota.
+
+    La función finaliza mostrando el resultado de la partida.
+
+    :param palabra: Palabra seleccionada para que el jugador intente adivinar.
+    """ 
+    completa=palabra_con_guiones(palabra)
+    print(' '.join(completa))
+    vidas=7
+    vidas_perdidas=0
+    print(f'Vidas: {vidas*"💗"}')
+    while vidas>0 and hay_guiones(*completa):
+        letra=pedir_letra()
+        contador_adivinar=0
+        completa,contador_adivinar=descubrir_letra(contador_adivinar,letra,palabra,*completa)
+        print(' '.join(completa))
+        vidas,vidas_perdidas=actualizar_vidas(contador_adivinar,vidas,vidas_perdidas)
+    mostrar_resultado(vidas,palabra)
 
 while True:
     jugar=input('¿Jugamos? (S/N) ').strip().lower()
@@ -103,70 +162,13 @@ while True:
                     match nivel:
                         case 1:
                             palabra=random.choice(niveles.get('facil'))
-                            completa=palabra_con_guiones(palabra)
-                            print(' '.join(completa))
-                            vidas=7
-                            vidas_perdidas=0
-                            print(f'Vidas: {vidas*"💗"}')
-                            while vidas!=0:
-                                letra_ingresada=input('Ingrese una letra: ').strip().lower()
-                                contador_adivinar=0
-                                if not (len(letra_ingresada)==1 and letra_ingresada.isalpha()):                                        
-                                    print('Error: Entrada Inválida. Recuerde que de ingresar una sola letra.')
-                                else:
-                                    completa,contador_adivinar=descubrir_letra(contador_adivinar,letra_ingresada,palabra,*completa)
-                                    print(' '.join(completa))
-                                    vidas,vidas_perdidas=actualizar_vidas(contador_adivinar,vidas,vidas_perdidas)
-                                    if vidas==0:
-                                        print('💀 Perdiste! Te quedaste sin vidas')
-                                        print(f'La palabra era: {" ".join(palabra.upper())}')
-                                    if len(completa)==len(palabra) and hay_guiones(*completa)==False:
-                                        print('GANASTE! 🎉🎉🎉')
-                                        break
+                            jugar_partida(palabra)
                         case 2:
                             palabra=random.choice(niveles.get('intermedio'))
-                            completa=palabra_con_guiones(palabra)
-                            print(' '.join(completa))
-                            vidas=7
-                            vidas_perdidas=0
-                            print(f'Vidas: {vidas*"💗"}')
-                            while vidas!=0:
-                                letra_ingresada=input('Ingrese una letra: ').strip().lower()
-                                contador_adivinar=0
-                                if not (len(letra_ingresada)==1 and letra_ingresada.isalpha()):                                        
-                                    print('Error: Entrada Inválida. Recuerde que de ingresar una sola letra.')
-                                else:
-                                    completa,contador_adivinar=descubrir_letra(contador_adivinar,letra_ingresada,palabra,*completa)
-                                    print(' '.join(completa))
-                                    vidas,vidas_perdidas=actualizar_vidas(contador_adivinar,vidas,vidas_perdidas)
-                                    if vidas==0:
-                                        print('💀 Perdiste! Te quedaste sin vidas')
-                                        print(f'La palabra era: {" ".join(palabra.upper())}')
-                                    if len(completa)==len(palabra) and hay_guiones(*completa)==False:
-                                        print('GANASTE! 🎉🎉🎉')
-                                        break
+                            jugar_partida(palabra)
                         case 3:
                             palabra=random.choice(niveles.get('dificil'))
-                            completa=palabra_con_guiones(palabra)
-                            print(' '.join(completa))
-                            vidas=7
-                            vidas_perdidas=0
-                            print(f'Vidas: {vidas*"💗"}')
-                            while vidas!=0:
-                                letra_ingresada=input('Ingrese una letra: ').strip().lower()
-                                contador_adivinar=0
-                                if not (len(letra_ingresada)==1 and letra_ingresada.isalpha()):                                        
-                                    print('Error: Entrada Inválida. Recuerde que de ingresar una sola letra.')
-                                else:
-                                    completa,contador_adivinar=descubrir_letra(contador_adivinar,letra_ingresada,palabra,*completa)
-                                    print(' '.join(completa))
-                                    vidas,vidas_perdidas=actualizar_vidas(contador_adivinar,vidas,vidas_perdidas)
-                                    if vidas==0:
-                                        print('💀 Perdiste! Te quedaste sin vidas')
-                                        print(f'La palabra era: {" ".join(palabra.upper())}')
-                                    if len(completa)==len(palabra) and hay_guiones(*completa)==False:
-                                        print('GANASTE! 🎉🎉🎉')
-                                        break
+                            jugar_partida(palabra)
                         case _:
                             print('Error: Entrada Inválida. Elija los niveles entre 1 y 3.')
                             continue
