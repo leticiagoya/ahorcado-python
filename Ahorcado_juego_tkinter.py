@@ -1,5 +1,7 @@
 import tkinter as tk
+
 from random import choice
+
 from palabras_juego import modo_argento, normal_niveles
 
 modo_actual = None
@@ -105,6 +107,20 @@ lbl_niveles = tk.Label(
 )
 lbl_niveles.pack(pady=20)
 
+def iniciar_juego_normal(nivel):
+    global nivel_actual, palabra_actual
+
+    nivel_actual = nivel
+    palabra_actual = choice(normal_niveles[nivel])
+
+    print("Modo:", modo_actual)
+    print("Nivel:", nivel_actual)
+    print("Palabra:", palabra_actual)
+
+    mostrar_frame(frame_juego)
+    mostrar_palabra_oculta()
+    ventana.bind("<Key>", procesar_tecla)
+
 estilo_nivel = {
     "font": ("Arial", 15, "bold"),
     "width": 20,
@@ -115,13 +131,25 @@ estilo_nivel = {
     "cursor": "hand2"
 }
 
-btn_facil = tk.Button(menu_niveles, text="Fácil", **estilo_nivel)
+btn_facil = tk.Button(
+    menu_niveles, 
+    text="Fácil", 
+    command=lambda: iniciar_juego_normal("facil"), 
+    **estilo_nivel)
 btn_facil.pack(pady=10)
 
-btn_intermedio = tk.Button(menu_niveles, text="Intermedio", **estilo_nivel)
+btn_intermedio = tk.Button(
+    menu_niveles, 
+    text="Intermedio", 
+    command=lambda: iniciar_juego_normal("intermedio"), 
+    **estilo_nivel)
 btn_intermedio.pack(pady=10)
 
-btn_dificil = tk.Button(menu_niveles, text="Difícil", **estilo_nivel)
+btn_dificil = tk.Button(
+    menu_niveles, 
+    text="Difícil",
+    command=lambda: iniciar_juego_normal("dificil"), 
+    **estilo_nivel)
 btn_dificil.pack(pady=10)
 
 btn_volver = tk.Button(
@@ -136,6 +164,50 @@ btn_volver.place(x=20, y=20)
 
 frame_juego = tk.Frame(ventana, bg="tomato")
 
+# --- Sub-frames del juego ---
+frame_info = tk.Frame(frame_juego, bg="tomato")
+frame_info.pack(fill="x",pady=40)
+
+frame_palabra = tk.Frame(frame_juego, bg="tomato")
+frame_palabra.pack(pady=30)
+
+vidas = 6
+
+lbl_vidas = tk.Label(
+    frame_info,
+    text=f"Vidas: {'💗 ' * vidas}",
+    font=("Arial", 14, "bold"),
+    bg="tomato",
+    fg="white"
+)
+lbl_vidas.pack(anchor="e", padx=20)
+
+lbl_palabra = tk.Label(
+    frame_palabra,
+    text="",
+    font=("Arial", 28, "bold"),
+    bg="tomato",
+    fg="white"
+)
+lbl_palabra.pack()
+
+
+def procesar_tecla(event):
+    letra = event.char.lower()
+
+    if not letra.isalpha():
+        return
+
+    print("Letra presionada:", letra)
+
+
+
+
+def mostrar_palabra_oculta():
+    oculta = " ".join("_" for _ in palabra_actual)
+    lbl_palabra.config(text=oculta)
+
+
 def ir_a_modo_argento():
     global modo_actual, palabra_actual
 
@@ -146,6 +218,8 @@ def ir_a_modo_argento():
     print("Palabra elegida:", palabra_actual)
 
     mostrar_frame(frame_juego)
+    mostrar_palabra_oculta()
+    ventana.bind("<Key>", procesar_tecla)
 
 btn_argento.config(command=ir_a_modo_argento)
 
