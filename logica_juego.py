@@ -36,6 +36,26 @@ def descubrir_letra (contador,letra,palabra,*args):
             contador+=1
     return lista,contador
 
+def intentar_palabra_completa (palabra,palabra_arriesgada,lista):
+    """
+    Verifica si la palabra arriesgada por el jugador coincide con la palabra
+    a adivinar.
+
+    Si la palabra es correcta, reemplaza el estado actual de la palabra
+    (guiones y letras descubiertas) por la palabra completa en mayúsculas.
+    Si es incorrecta, la lista se devuelve sin cambios (la penalización
+    se gestiona en otra función).
+
+    :param palabra: Palabra correcta que debía adivinarse.
+    :param palabra_arriesgada: Palabra ingresada por el jugador.
+    :param lista: Estado actual de la palabra (letras y guiones).
+    :return: Lista actualizada con la palabra completa si acertó,
+             o la lista original si falló.
+    """
+    if palabra==palabra_arriesgada:
+        lista=palabra.upper().split()
+    return lista
+
 def hay_guiones(*args):
     """
     Verifica si existe al menos un guion bajo ('_') en la lista que representa
@@ -54,7 +74,7 @@ def hay_guiones(*args):
             encontrado=True
     return encontrado
 
-def actualizar_vidas (contador,vidas,vidas_perdidas):
+def penalizar_error_letra (contador,vidas,vidas_perdidas):
     """
     Actualiza la cantidad de vidas restantes del jugador según el resultado
     del intento actual y muestra el estado visual de las vidas.
@@ -68,6 +88,36 @@ def actualizar_vidas (contador,vidas,vidas_perdidas):
     :return: Tupla con la cantidad actualizada de vidas y vidas perdidas.
     """
     if contador==0:
+        vidas-=1
+        vidas_perdidas=7-vidas 
+        print(f'Vidas: {vidas_perdidas*"❌"}{vidas*"💗"}')
+    else:
+        print(f'Vidas: {vidas_perdidas*"❌"}{vidas*"💗"}')
+    return vidas,vidas_perdidas
+
+def penalizar_error_palabra (palabra,palabra_arriesgada,vidas,vidas_perdidas):
+    """
+    Aplica la penalización correspondiente cuando el jugador arriesga
+    la palabra completa y falla.
+
+    Si la palabra arriesgada es incorrecta:
+    - Se descuentan 2 vidas si el jugador tiene 2 o más.
+    - Se descuenta 1 vida si solo le queda una.
+    En caso de acierto, las vidas no se modifican.
+
+    La función también muestra el estado visual actualizado de las vidas.
+
+    :param palabra: Palabra correcta a adivinar.
+    :param palabra_arriesgada: Palabra ingresada por el jugador.
+    :param vidas: Cantidad de vidas actuales del jugador.
+    :param vidas_perdidas: Cantidad de vidas ya perdidas.
+    :return: Tupla con la cantidad actualizada de vidas y vidas perdidas.
+    """
+    if palabra!=palabra_arriesgada and vidas>=2:
+        vidas-=2
+        vidas_perdidas=7-vidas 
+        print(f'Vidas: {vidas_perdidas*"❌"}{vidas*"💗"}')
+    elif palabra!=palabra_arriesgada and vidas==1:
         vidas-=1
         vidas_perdidas=7-vidas 
         print(f'Vidas: {vidas_perdidas*"❌"}{vidas*"💗"}')
@@ -109,19 +159,40 @@ def mostrar_resultado(vidas,palabra):
     else:
         print('GANASTE! 🎉🎉🎉')
 
+def hay_letras_descubiertas(*args):
+    """
+    Verifica si al menos una letra de la palabra ya fue descubierta.
+
+    La función recorre el estado actual de la palabra y determina
+    si existe alguna letra alfabética (es decir, que no sea un guion).
+
+    :param args: Estado actual de la palabra (letras descubiertas y guiones).
+    :return: True si hay al menos una letra descubierta, False en caso contrario.
+    """    
+    lista=list(args)
+    encontrado=False
+    for indice in range(len(lista)):
+        if lista[indice].isalpha():
+            encontrado=True
+    return encontrado
+
 def jugar_partida(palabra):
     """
     Ejecuta una partida completa del juego del ahorcado.
 
     Inicializa el estado de la palabra, las vidas del jugador y gestiona
-    el ciclo principal del juego, solicitando letras, actualizando el
-    estado de la palabra y las vidas, y verificando las condiciones de
-    victoria o derrota.
+    el ciclo principal del juego. Durante la partida:
+    - Solicita letras al jugador.
+    - Actualiza el estado de la palabra según los aciertos.
+    - Penaliza la pérdida de vidas por errores de letras.
+    - Permite arriesgar la palabra completa una vez que hay letras descubiertas,
+      aplicando una penalización adicional en caso de error.
 
-    La función finaliza mostrando el resultado de la partida.
+    La función finaliza cuando el jugador se queda sin vidas o
+    logra descubrir la palabra completa, mostrando el resultado final.
 
     :param palabra: Palabra seleccionada para que el jugador intente adivinar.
-    """ 
+    """
     completa=palabra_con_guiones(palabra)
     print(' '.join(completa))
     vidas=7
@@ -129,8 +200,24 @@ def jugar_partida(palabra):
     print(f'Vidas: {vidas*"💗"}')
     while vidas>0 and hay_guiones(*completa):
         letra=pedir_letra()
-        contador_adivinar=0
-        completa,contador_adivinar=descubrir_letra(contador_adivinar,letra,palabra,*completa)
+        contador_adivinado=0
+        completa,contador_adivinado=descubrir_letra(contador_adivinado,letra,palabra,*completa)
         print(' '.join(completa))
-        vidas,vidas_perdidas=actualizar_vidas(contador_adivinar,vidas,vidas_perdidas)
+        vidas,vidas_perdidas=penalizar_error_letra(contador_adivinado,vidas,vidas_perdidas)
+        if hay_letras_descubiertas(*completa) and hay_guiones(*completa):
+            arriesgar='s'
+            while arriesgar!='n':
+                arriesgar=input('Probar una palabra, prodria perder 2 vidas. (S/N) ').strip().lower()
+                if arriesgar=='s':
+                    palabra_arriesgada=input('Ingrese la palabra: ').strip().lower()
+                    if len(palabra)==len(palabra_arriesgada) and palabra_arriesgada.isalpha():
+                        completa=intentar_palabra_completa(palabra,palabra_arriesgada,completa)
+                        print(' '.join(completa))
+                        vidas,vidas_perdidas=penalizar_error_palabra(palabra,palabra_arriesgada,vidas,vidas_perdidas)
+                        break
+                    else:
+                        print('Error: Entrada Inválida. Revise si la palabra ingresada tiene la misma cantidad de letras \n' \
+                        'que la palabra a descubrir o contiene algún caracter no alfabético.')
+                if arriesgar not in ('s','n'):
+                    print('Error: Entrada Inválida.Intente nuevamente')
     mostrar_resultado(vidas,palabra)
