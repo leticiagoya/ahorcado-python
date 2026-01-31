@@ -204,7 +204,7 @@ def jugar_partida(palabra):
         completa,contador_adivinado=descubrir_letra(contador_adivinado,letra,palabra,*completa)
         print(' '.join(completa))
         vidas,vidas_perdidas=penalizar_error_letra(contador_adivinado,vidas,vidas_perdidas)
-        if hay_letras_descubiertas(*completa) and hay_guiones(*completa):
+        if (hay_letras_descubiertas(*completa) and hay_guiones(*completa)) and vidas!=0:
             arriesgar='s'
             while arriesgar!='n':
                 arriesgar=input('Probar una palabra, prodria perder 2 vidas. (S/N) ').strip().lower()
