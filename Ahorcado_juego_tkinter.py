@@ -2,8 +2,6 @@ import tkinter as tk
 
 from random import choice
 
-import logica_juego as lj
-
 from palabras_juego import modo_argento, normal_niveles
 
 modo_actual = None
@@ -48,6 +46,7 @@ def ir_a_modo_argento():
     mostrar_frame(frame_juego)
     lbl_info_actual.config(text=f'🔥 MODO {modo_actual.upper()} 🔥\n'\
                            'Palabras de la calle, del interior y bien de acá.')
+    resetear_partida()
     mostrar_palabra_oculta()
     ventana.bind("<Key>", tecla_presionada)
 
@@ -73,6 +72,7 @@ def iniciar_juego_normal(nivel):
     resetear_partida()
     mostrar_palabra_oculta()
     ventana.bind("<Key>", tecla_presionada)
+    # ventana.unbind("<Key>")
 
 def mostrar_palabra_oculta():
     oculta = " ".join("_" for _ in palabra_actual)
@@ -99,6 +99,9 @@ def tecla_presionada(event):
         vidas -= 1
         actualizar_vidas()
 
+    if verificar_victoria():
+        finalizar_juego(ganaste=True)
+
 def actualizar_palabra():
     resultado = ""
 
@@ -112,12 +115,11 @@ def actualizar_palabra():
 
 def actualizar_vidas():
     corazones = "❤ " * vidas
-    cruces= "❌ " * (7-vidas)
+    cruces = "❌ " * (7 - vidas)
     lbl_vidas.config(text=f"Vidas: {cruces}{corazones}")
 
     if vidas <= 0:
-        lbl_palabra.config(text=f"Perdiste 😢\nLa palabra era: {palabra_actual.upper()}")
-        ventana.unbind("<Key>")
+        finalizar_juego(ganaste=False)
 
 def resetear_partida():
     global vidas, letras_adivinadas
@@ -125,14 +127,81 @@ def resetear_partida():
     letras_adivinadas.clear()
     actualizar_vidas()
 
+def verificar_victoria():
+    for letra in palabra_actual:
+        if letra not in letras_adivinadas:
+            return False
+    return True
+
+def volver_al_inicio(event=None):
+    ventana.unbind("<Key>")
+    ventana.unbind("<Return>")
+    ventana.unbind("<space>")
+    mostrar_frame(frame_inicio)
+
+def finalizar_juego(ganaste):
+    ventana.unbind("<Key>")  # cortamos el ingreso de letras
+
+    if ganaste:
+        lbl_palabra.config(text=f"🎉 {palabra_actual.upper()} 🎉")
+        mostrar_significado_argento()
+        lbl_info_actual.config(text="¡Ganaste! 🥳\n  ")
+        lbl_volver_inicio.config(text="Presioná ENTER o ESPACIO para volver al inicio")
+
+    else:
+        lbl_palabra.config(text=f"💀 {palabra_actual.upper()} 💀")
+        mostrar_significado_argento()
+        lbl_info_actual.config(text="Perdiste 😢\n  ")
+        lbl_volver_inicio.config(text="Presioná ENTER o ESPACIO para volver al inicio")
+
+
+    # 👉 escuchamos SOLO estas teclas
+    ventana.bind("<Return>", volver_al_inicio)
+    ventana.bind("<space>", volver_al_inicio)
+
+def mostrar_significado_argento ():
+    if palabra_actual in list(modo_argento.keys()):
+        if modo_argento[palabra_actual].get('lunfardo'):
+            lbl_significado.config(
+                text=f"Significado: {modo_argento[palabra_actual].get('significado')}\n"\
+                f"Usado en: {modo_argento[palabra_actual].get('uso_principal')}\n"\
+                f"Forma parte del lunfardo rioplatense")
+        else:
+            lbl_significado.config(
+                text=f"Significado: {modo_argento[palabra_actual].get('significado')}\n"\
+                f"Usado en: {modo_argento[palabra_actual].get('uso_principal')}\n"\
+                f"No forma parte del lunfardo rioplatense")
+
+
 ventana=tk.Tk()
-ventana.title('Juego del AHORCADO')
+ventana.title('El Juego del Ahorcado')
 ventana.config(bg="tomato")
 
-centrar_ventana(ventana, 600, 450)
+centrar_ventana(ventana, 600, 500)
 ventana.resizable(False, False)
 
 frame_inicio = tk.Frame(ventana, bg="tomato")
+
+pack_titulos= tk.Frame(frame_inicio, bg="tomato")
+pack_titulos.pack(pady=50, fill="x")
+
+lbl_titulo=tk.Label(
+    pack_titulos,
+    text="☠ El Juego del Ahorcado ☠",
+    font=("Arial", 25, "bold"),
+    bg="tomato",
+    fg="white"
+)
+lbl_titulo.pack(pady=10)
+
+lbl_subtitulo=tk.Label(
+    pack_titulos,
+    text="Adiviná la palabra antes de quedarte sin vidas 😉",
+    font=("Arial", 15),
+    bg="tomato",
+    fg="white"
+)
+lbl_subtitulo.pack()
 
 btn_jugar = tk.Button(
     frame_inicio,
@@ -147,7 +216,7 @@ btn_jugar = tk.Button(
     command=ir_a_modos,
     cursor="hand2"
 )
-btn_jugar.place(relx=0.5, rely=0.5, anchor="center")
+btn_jugar.pack(pady=50, anchor="center")
 
 frame_modos = tk.Frame(ventana, bg="tomato")
 
@@ -246,6 +315,12 @@ frame_actual.pack(pady=8)
 frame_palabra = tk.Frame(frame_juego, bg="tomato")
 frame_palabra.pack(pady=50)
 
+frame_significado=tk.Frame(frame_juego, bg="tomato")
+frame_significado.pack(pady=5,fill="x")
+
+frame_abajo=tk.Frame(frame_juego, bg="tomato")
+frame_abajo.pack(side="bottom", fill="x")
+
 btn_volver = tk.Button(
     frame_volver_vidas,
     text="⬅ Volver",
@@ -286,7 +361,23 @@ lbl_palabra = tk.Label(
 )
 lbl_palabra.pack()
 
+lbl_significado = tk.Label(
+    frame_significado,
+    text="",
+    font=("Arial", 15),
+    bg="tomato",
+    fg="white"
+)
+lbl_significado.pack(padx=20)
 
+lbl_volver_inicio = tk.Label(
+    frame_abajo,
+    text="",
+    font=("Arial", 12),
+    bg="tomato",
+    fg="black"
+)
+lbl_volver_inicio.pack(padx=10,pady=5)
 
 
 

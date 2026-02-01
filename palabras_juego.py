@@ -8,47 +8,47 @@ normal_niveles={
 modo_argento = {
     "bondi": {
         "significado": "Autobús o colectivo de transporte público.",
-        "uso_principal": "Uso urbano en todo el país, especialmente Buenos Aires.",
+        "uso_principal": "Especialmente en Buenos Aires.",
         "lunfardo": True
     },
     "guita": {
         "significado": "Dinero.",
-        "uso_principal": "Uso coloquial en toda Argentina.",
+        "uso_principal": "Todo el país.",
         "lunfardo": True
     },
     "laburo": {
         "significado": "Trabajo o empleo.",
-        "uso_principal": "Uso general en Argentina.",
+        "uso_principal": "Todo el país.",
         "lunfardo": True
     },
     "pibe": {
         "significado": "Niño, adolescente o joven.",
-        "uso_principal": "Uso general, especialmente en Buenos Aires.",
+        "uso_principal": "Especialmente en Buenos Aires.",
         "lunfardo": True
     },
     "mina": {
         "significado": "Mujer.",
-        "uso_principal": "Uso coloquial urbano.",
+        "uso_principal": "Todo el país.",
         "lunfardo": True
     },
     "chamuyo": {
         "significado": "Charla engañosa o exagerada para convencer a alguien.",
-        "uso_principal": "Uso urbano en todo el país.",
+        "uso_principal": "Todo el país.",
         "lunfardo": True
     },
     "quilombo": {
         "significado": "Situación caótica, problema o desorden.",
-        "uso_principal": "Uso general en Argentina.",
+        "uso_principal": "Todo el país.",
         "lunfardo": True
     },
     "canchero": {
         "significado": "Persona segura de sí misma o con experiencia.",
-        "uso_principal": "Uso general.",
+        "uso_principal": "Todo el país.",
         "lunfardo": True
     },
     "guri": {
         "significado": "Niño.",
-        "uso_principal": "Litoral argentino (Entre Ríos, Corrientes, Misiones).",
+        "uso_principal": "Litoral (Entre Ríos, Corrientes, Misiones).",
         "lunfardo": False
     },
     "chango": {
@@ -78,22 +78,22 @@ modo_argento = {
     },
     "birra": {
         "significado": "Cerveza.",
-        "uso_principal": "Uso general en Argentina.",
+        "uso_principal": "Todo el país.",
         "lunfardo": True
     },
     "macana": {
         "significado": "Error, mentira o problema.",
-        "uso_principal": "Uso general.",
+        "uso_principal": "Todo el país.",
         "lunfardo": False
     },
     "fiaca": {
         "significado": "Pereza o falta de ganas.",
-        "uso_principal": "Uso general, urbano.",
+        "uso_principal": "Todo el país.",
         "lunfardo": True
     },
     "boliche": {
         "significado": "Bar, local nocturno o discoteca.",
-        "uso_principal": "Uso general.",
+        "uso_principal": "Todo el país.",
         "lunfardo": False
     },
     "empanada": {
@@ -103,7 +103,7 @@ modo_argento = {
     },
     "mate": {
         "significado": "Infusión tradicional hecha con yerba mate.",
-        "uso_principal": "Argentina y región del Cono Sur.",
+        "uso_principal": "Todo el país",
         "lunfardo": False
     }
 }
