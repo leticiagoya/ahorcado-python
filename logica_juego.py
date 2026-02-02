@@ -1,3 +1,5 @@
+import os
+
 def palabra_con_guiones(palabra):
     """
     Genera una lista de guiones bajos ('_') cuya longitud coincide
@@ -31,7 +33,7 @@ def descubrir_letra (contador,letra,palabra,*args):
     """
     lista=list(args)
     for indice in range(len(lista)):
-        if lista[indice]=='_' and palabra[indice]==letra:
+        if (lista[indice]=='_' and palabra[indice]==letra):
             lista[indice]=letra.upper()
             contador+=1
     return lista,contador
@@ -74,7 +76,7 @@ def hay_guiones(*args):
             encontrado=True
     return encontrado
 
-def penalizar_error_letra (contador,vidas,vidas_perdidas):
+def penalizar_error_letra (contador,letra,letras_adivinadas,letras_incorrectas,vidas,vidas_perdidas):
     """
     Actualiza la cantidad de vidas restantes del jugador según el resultado
     del intento actual y muestra el estado visual de las vidas.
@@ -87,13 +89,14 @@ def penalizar_error_letra (contador,vidas,vidas_perdidas):
     :param vidas_perdidas: Cantidad de vidas ya perdidas.
     :return: Tupla con la cantidad actualizada de vidas y vidas perdidas.
     """
-    if contador==0:
+    if contador==0 and (letra not in letras_adivinadas):
+        letras_incorrectas+=letra
         vidas-=1
         vidas_perdidas=7-vidas 
         print(f'Vidas: {vidas_perdidas*"❌"}{vidas*"💗"}')
     else:
         print(f'Vidas: {vidas_perdidas*"❌"}{vidas*"💗"}')
-    return vidas,vidas_perdidas
+    return vidas,vidas_perdidas,letras_incorrectas
 
 def penalizar_error_palabra (palabra,palabra_arriesgada,vidas,vidas_perdidas):
     """
@@ -136,7 +139,7 @@ def pedir_letra():
     :return: Letra válida ingresada por el usuario, en minúscula.
     """
     while True:
-        letra=input('Ingrese una letra: ').strip().lower()
+        letra=input('➡ Ingrese una letra: ').strip().lower()
         if len(letra)==1 and letra.isalpha():
             return letra
         else:
@@ -176,6 +179,29 @@ def hay_letras_descubiertas(*args):
             encontrado=True
     return encontrado
 
+def mostrar_titulos(modo,nivel=None):
+    """
+    Limpia la terminal y muestra los títulos principales del juego
+    según el modo y nivel seleccionados.
+
+    :param modo (str): Modo de juego actual. Puede ser "Argento" o "Normal".
+    :param nivel (str, optional): Nivel de dificultad del juego (solo se usa en modo normal).
+
+    Notes
+    -----
+    - En modo Argento se muestra un título y una descripción especial.
+    - En modo Normal se muestra el modo y el nivel elegido.
+    """
+    os.system('cls')
+    print(f'{"💀 El Juego del Ahorcado 💀":^100}')
+    if modo=="Argento":
+        print(f'{"🔥 MODO ARGENTO 🔥":^100}')
+        print('Palabras de la calle, del interior y bien de acá.')
+    else:
+        print(f'{f"Modo {modo}":^100}') 
+        print(f'Nivel {nivel}')
+
+
 def jugar_partida(palabra):
     """
     Ejecuta una partida completa del juego del ahorcado.
@@ -197,27 +223,41 @@ def jugar_partida(palabra):
     print(' '.join(completa))
     vidas=7
     vidas_perdidas=0
+    letras_ingresadas=''
+    letras_incorrectas=''
     print(f'Vidas: {vidas*"💗"}')
+    print()
     while vidas>0 and hay_guiones(*completa):
         letra=pedir_letra()
         contador_adivinado=0
         completa,contador_adivinado=descubrir_letra(contador_adivinado,letra,palabra,*completa)
         print(' '.join(completa))
-        vidas,vidas_perdidas=penalizar_error_letra(contador_adivinado,vidas,vidas_perdidas)
+        vidas,vidas_perdidas,letras_incorrectas=penalizar_error_letra(contador_adivinado,letra,letras_ingresadas,letras_incorrectas,vidas,vidas_perdidas)
+        if letra not in letras_ingresadas:
+            letras_ingresadas+=letra
         if (hay_letras_descubiertas(*completa) and hay_guiones(*completa)) and vidas!=0:
             arriesgar='s'
             while arriesgar!='n':
+                print()
                 arriesgar=input('Probar una palabra, prodria perder 2 vidas. (S/N) ').strip().lower()
                 if arriesgar=='s':
-                    palabra_arriesgada=input('Ingrese la palabra: ').strip().lower()
-                    if len(palabra)==len(palabra_arriesgada) and palabra_arriesgada.isalpha():
+                    palabra_arriesgada=input('➡ Ingrese la palabra: ').strip().lower()
+                    if palabra_arriesgada.isalpha():
                         completa=intentar_palabra_completa(palabra,palabra_arriesgada,completa)
                         print(' '.join(completa))
                         vidas,vidas_perdidas=penalizar_error_palabra(palabra,palabra_arriesgada,vidas,vidas_perdidas)
                         break
                     else:
-                        print('Error: Entrada Inválida. Revise si la palabra ingresada tiene la misma cantidad de letras \n' \
-                        'que la palabra a descubrir o contiene algún caracter no alfabético.')
+                        print('Error: Entrada Inválida. Revise si la palabra ingresada contiene algún caracter no alfabético.')
                 if arriesgar not in ('s','n'):
                     print('Error: Entrada Inválida.Intente nuevamente')
+            if vidas!=0:
+                if hay_guiones(*completa) and letras_incorrectas!='':
+                    print()
+                    print(f'Letras Incorrectas: {" - ".join(letras_incorrectas)}')
+                    print()
+                else:
+                    print()
+            else:
+                print()
     mostrar_resultado(vidas,palabra)
