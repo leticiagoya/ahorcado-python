@@ -52,6 +52,7 @@ def ir_a_modos():
     """
     Cambia la vista a la pantalla de selección de modos de juego.
     """
+    lbl_significado.config(text='')
     mostrar_frame(frame_modos)
 
 def ir_a_modo_normal():
@@ -76,8 +77,8 @@ def ir_a_modo_argento():
     modo_actual = "argento"
     palabra_actual = choice(list(modo_argento.keys()))
 
-    print("Modo:", modo_actual)
-    print("Palabra elegida:", palabra_actual)
+    # print("Modo:", modo_actual)
+    # print("Palabra elegida:", palabra_actual)
 
     mostrar_frame(frame_juego)
     lbl_info_actual.config(text=f'🔥 MODO {modo_actual.upper()} 🔥\n'\
@@ -108,9 +109,9 @@ def iniciar_juego_normal(nivel):
     else:
         nivel_actual=nivel
 
-    print("Modo:", modo_actual)
-    print("Nivel:", nivel_actual)
-    print("Palabra:", palabra_actual)
+    # print("Modo:", modo_actual)
+    # print("Nivel:", nivel_actual)
+    # print("Palabra:", palabra_actual)
     
     mostrar_frame(frame_juego)
     lbl_info_actual.config(text=f'Modo {modo_actual.capitalize()}\nNivel {nivel_actual.capitalize()}')
@@ -221,6 +222,7 @@ def volver_al_inicio(event=None):
     ventana.unbind("<Key>")
     ventana.unbind("<Return>")
     ventana.unbind("<space>")
+    lbl_significado.config(text='')
     mostrar_frame(frame_inicio)
 
 def finalizar_juego(ganaste):

@@ -32,7 +32,7 @@ modo_argento = {
         "lunfardo": True
     },
     "chamuyo": {
-        "significado": "Charla engañosa o exagerada para convencer a alguien.",
+        "significado": "Charla engañosa o exagerada\npara convencer a alguien.",
         "uso_principal": "Todo el país.",
         "lunfardo": True
     },
@@ -72,7 +72,7 @@ modo_argento = {
         "lunfardo": False
     },
     "culiao": {
-        "significado": "Expresión intensificadora; puede ser insulto o muletilla.",
+        "significado": "Expresión intensificadora;\npuede ser insulto o muletilla.",
         "uso_principal": "Córdoba.",
         "lunfardo": False
     },
